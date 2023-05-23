@@ -1,6 +1,7 @@
 class Folha:
-    def __init__(self, valor: str) -> None:
+    def __init__(self, valor: str, pai) -> None:
         self.__valor = valor
+        self.__pai = pai
 
     @property
     def valor(self):
@@ -10,23 +11,31 @@ class Folha:
     def valor(self, valor: str):
         self.__valor = valor
 
-class nodo:
+    @property
+    def pai(self):
+        return self.__pai
+    
+    @pai.setter
+    def pai(self, pai):
+        self.__pai = pai
+
+class Nodo:
     def __init__(self) -> None:
-        self.__esquerda = None
-        self.__direita = None
+        self.__nao = None
+        self.__sim = None
 
     @property
-    def esquerda(self):
-        return self.__esquerda
+    def nao(self):
+        return self.__nao
     
-    @esquerda.setter
-    def esquerda(self, valor: str):
-        self.__esquerda = valor
+    @nao.setter
+    def nao(self, valor: str):
+        self.__nao = valor
 
     @property
-    def direita(self):
-        return self.__direita
+    def sim(self):
+        return self.__sim
     
-    @direita.setter
-    def direita(self, valor: str):
-        self.__direita = valor
+    @sim.setter
+    def sim(self, valor: str):
+        self.__sim = valor
