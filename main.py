@@ -17,7 +17,8 @@ def jogar():
         else:
             resposta = resposta.nao
     print (f"Sua carta é {atual.valor}?")
-    caminho = resposta
+    if anterior is not None:
+        caminho = resposta
     resposta = input("Responda Sim ('s') ou Não ('n')").lower()
     while resposta not in ('s', 'n'):
         resposta = input("A resposta pode ser somente 's' ou 'n', por favor, insira novamente").lower()
@@ -35,12 +36,18 @@ def adicionar(pai: Nodo, caminho: str, filho1: Folha):
     while not posFilho1 in ('s', 'n'):
         posFilho1 = input("A resposta pode ser somente 's' ou 'n'. Por favor, insira novamente").lower()
     if posFilho1 == 's':
-        pai.caminho = Nodo(pergunta, filho1, Folha(novo))
+        if pai is None:
+            raiz = Nodo(pergunta, filho1, Folha(novo))
+        else:
+            pai.caminho = Nodo(pergunta, filho1, Folha(novo))
     else:
-        pai.caminho = Nodo(pergunta, Folha(novo), filho1)
+        if pai is None:
+            raiz = Nodo(pergunta, Folha(novo), filho1)
+        else:
+            pai.caminho = Nodo(pergunta, Folha(novo), filho1)
 
 
-raiz = Folha(input("Insira um valor para a primeira carta"))
+raiz = Folha(input("Insira um valor para a primeira carta: "))
 while True:
     jogar()
 
