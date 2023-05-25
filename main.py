@@ -23,6 +23,8 @@ def jogar():
         resposta = input("A resposta pode ser somente 's' ou 'n', por favor, insira novamente").lower()
     if resposta == 's':
         print("Eba! Mais uma resposta certa!")
+        pontuacao += 1
+        print (f"Tenho {pontuacao} acerto(s)")
     else:
         adicionar(anterior, caminho,  atual)
 
@@ -36,5 +38,9 @@ def adicionar(pai: Nodo, caminho: str, filho1: Folha):
         pai.caminho = Nodo(pergunta, filho1, Folha(novo))
     else:
         pai.caminho = Nodo(pergunta, Folha(novo), filho1)
-        
+
+
+raiz = Folha(input("Insira um valor para a primeira carta"))
+while True:
+    jogar()
 
