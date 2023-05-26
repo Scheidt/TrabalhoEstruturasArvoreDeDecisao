@@ -1,5 +1,6 @@
 from classes import *
 
+global raiz 
 raiz = None
 pontuacao = 0
 
@@ -16,8 +17,8 @@ def jogar():
             atual = atual.sim
         else:
             resposta = resposta.nao
-    print (f"Sua carta é {atual.valor}?")
-    if anterior is not None:
+    print (f"Sua carta é {atual.valor}?") # TRABALHAR AQUI
+    if not anterior is None:
         caminho = resposta
     resposta = input("Responda Sim ('s') ou Não ('n')").lower()
     while resposta not in ('s', 'n'):
@@ -27,9 +28,12 @@ def jogar():
         pontuacao += 1
         print (f"Tenho {pontuacao} acerto(s)")
     else:
+        if anterior is None:
+            adicionar(None, caminho)
         adicionar(anterior, caminho,  atual)
 
 def adicionar(pai: Nodo, caminho: str, filho1: Folha):
+    global raiz
     novo = input("Qual era a sua carta?")
     pergunta = input(f"O que diferencia {filho1.valor} de {novo}")
     posFilho1 = input(f"E {filho1.valor} {pergunta}? ['s'/'n']").lower()
