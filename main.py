@@ -8,7 +8,7 @@ class Play(Folha, Nodo):
     def __init__(self) -> None:
         self.__raiz = None
         self.__pontuacao = 0
-        self.__listaParaLoad = []
+        self.__listaInOrder = []
         if False: # Colocar True se desejar pre-definir alguns membros
             self.preDef
 
@@ -46,7 +46,7 @@ class Play(Folha, Nodo):
             posFilhoOriginal = self.sanitizarEntrada(posFilhoOriginal, ('s', 'n'), "Sua resposta pode ser somente 's' ou 'n', por favor, tente novamente: ")
             # Adicionar o filho em si
 
-    def adicionarDev(self, caminho: list, posFilhoVelho: str, valFilhoNovo: str, pergunta: str):
+    """def adicionarDev(self, caminho: list, posFilhoVelho: str, valFilhoNovo: str, pergunta: str):
         if self.__raiz is None: # Se não houver nenhuma carta inscrita
             self.__raiz = Folha(valFilhoNovo)
         elif isinstance(self.__raiz, Folha): # Se houver somente uma carta inscrita
@@ -66,7 +66,7 @@ class Play(Folha, Nodo):
             if posFilhoVelho == 'sim':
                 nodo.caminho[-1] = Nodo(pergunta, filhoVelho, Folha(valFilhoNovo))
             elif posFilhoVelho == 'nao':
-                nodo.caminho[-1] = Nodo(pergunta, Folha(valFilhoNovo), filhoVelho)
+                nodo.caminho[-1] = Nodo(pergunta, Folha(valFilhoNovo), filhoVelho)"""
 
     def sanitizarEntrada(self, entrada: str, possibilidades, mensagem):
         while not entrada in possibilidades:
@@ -74,13 +74,21 @@ class Play(Folha, Nodo):
         return entrada
            
     def carregar(self):
-        # Carregar uma lista como a árvore em si
+        # Carregar uma lista feita pelo inOrder a árvore em si
         pass
 
     def salvar(self):
-        # Fazer algum modo de In-Order e carregar em uma lista
+        self.inOrder
         pass
 
+    def inOrder(self, membArvore: Nodo or Folha): # Adaptei essa função do código da árvore AVL do trabalhinho. Eu NÃO pensei nisso.
+        self.__listaInOrder.append(membArvore)
+        if isinstance(membArvore, Folha):
+            pass
+        else:
+            self.inOrder(membArvore.sim)
+            self.inOrder(membArvore.nao)
+        
 
 
 
