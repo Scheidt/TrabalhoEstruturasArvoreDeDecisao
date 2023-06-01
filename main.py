@@ -8,21 +8,20 @@ class Play(Folha, Nodo):
     def __init__(self) -> None:
         self.__raiz = None
         self.__pontuacao = 0
-        if False:
+        self.__listaParaLoad = []
+        if False: # Colocar True se desejar pre-definir alguns membros
             self.preDef
 
-    def pontuacao(self):
-        # Mostrar pontuação
-        pass
+    def mostra_pontuacao(self):
+        print (f"\n*5")
+        if self.__pontuacao == 0:
+            print("Ainda não acertei nenhuma vez. Jogue mais uma vez e eu certamente vou acertar!")
+        else:
+            print(f"Eu já acertei {self.__pontuacao} vezes. Se você jogar mais uma vez posso aumentar esse número!")
 
     def jogar(self):
         # Percorrer lista e se não der certo, adicionar
         pass
-
-    def sanitizarEntrada(self, entrada: str, possibilidades, mensagem):
-        while not entrada in possibilidades:
-            entrada = input(mensagem)
-        return entrada
 
     def adicionar(self, pai: Nodo, caminhoPai: str):
 
@@ -46,17 +45,19 @@ class Play(Folha, Nodo):
             posFilhoOriginal = input(f"E {filhoNovo} {pergunta} ['s'/'n'] ")
             posFilhoOriginal = self.sanitizarEntrada(posFilhoOriginal, ('s', 'n'), "Sua resposta pode ser somente 's' ou 'n', por favor, tente novamente: ")
             # Adicionar o filho em si
-            
-        pass
 
     def adicionarDev(self, caminho: list, posFilhoVelho: str, valFilhoNovo: str, pergunta: str):
         if self.__raiz is None: # Se não houver nenhuma carta inscrita
             self.__raiz = Folha(valFilhoNovo)
         elif isinstance(self.__raiz, Folha): # Se houver somente uma carta inscrita
+            filhoVelho = self.__raiz
+            self.__raiz = Nodo(pergunta)
             if posFilhoVelho == 'sim':
-                self.__raiz = Nodo(pergunta, self.__raiz, Folha(valFilhoNovo))
+                self.__raiz.sim = filhoVelho
             elif posFilhoVelho == 'nao':
-                self.__raiz = Nodo(pergunta, Folha(valFilhoNovo), self.__raiz)
+                self.__raiz.nao = filhoVelho
+            self.__raiz.adicionar_faltante(Folha(valFilhoNovo))
+        # Olhar o código abaixo para verificar mudanças necessárias
         else:
             nodo = self.__raiz
             for passo in caminho[0, -2]: # Percorre a árvore com o caminho dado até o pai do futuro nodo
@@ -66,11 +67,23 @@ class Play(Folha, Nodo):
                 nodo.caminho[-1] = Nodo(pergunta, filhoVelho, Folha(valFilhoNovo))
             elif posFilhoVelho == 'nao':
                 nodo.caminho[-1] = Nodo(pergunta, Folha(valFilhoNovo), filhoVelho)
-            
 
-    def preDef(self):
-        # Criar uma pre-definição de arvore para mostrar melhor. Utilizar adicionarDev para colocar em posições corretas
+    def sanitizarEntrada(self, entrada: str, possibilidades, mensagem):
+        while not entrada in possibilidades:
+            entrada = input(mensagem)
+        return entrada
+           
+    def carregar(self):
+        # Carregar uma lista como a árvore em si
         pass
+
+    def salvar(self):
+        # Fazer algum modo de In-Order e carregar em uma lista
+        pass
+
+
+
+
 
 # Código legado.
 def jogar():

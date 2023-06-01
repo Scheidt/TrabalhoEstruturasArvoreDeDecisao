@@ -20,10 +20,10 @@ class Folha:
         self.__pai = pai"""
 
 class Nodo:
-    def __init__(self, pergunta: str, sim, nao) -> None:
+    def __init__(self, pergunta: str) -> None:
         self.__pergunta = pergunta
-        self.__nao = nao
-        self.__sim = sim
+        self.__nao = None
+        self.__sim = None
 
     @property
     def pergunta(self):
@@ -48,3 +48,9 @@ class Nodo:
     @sim.setter
     def sim(self, valor: str):
         self.__sim = valor
+
+    def adicionar_faltante(self, faltante: Folha):
+        if self.__sim is None:
+            self.__sim = faltante
+        else:
+            self.__nao = faltante
