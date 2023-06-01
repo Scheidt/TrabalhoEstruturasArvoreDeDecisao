@@ -52,5 +52,8 @@ class Nodo:
     def adicionar_faltante(self, faltante: Folha):
         if self.__sim is None:
             self.__sim = faltante
-        else:
+            return True
+        elif self.__nao is None:
             self.__nao = faltante
+            return True
+        return False

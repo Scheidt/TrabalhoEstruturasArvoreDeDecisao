@@ -68,14 +68,22 @@ class Play(Folha, Nodo):
             elif posFilhoVelho == 'nao':
                 nodo.caminho[-1] = Nodo(pergunta, Folha(valFilhoNovo), filhoVelho)"""
 
-    def sanitizarEntrada(self, entrada: str, possibilidades, mensagem):
+    def sanitizarEntrada(self, entrada: str, possibilidades: tuple, mensagem: str):
         while not entrada in possibilidades:
             entrada = input(mensagem)
         return entrada
            
     def inserir(self, pai, membroNovo):
         # Ver se o sim é uma folha e se não for, colocar no não
-        pass
+        # ACHO QUE NÃO CONSEGUE ADICIONAR FOLHAS NA DIREITA (pai.nao)
+        if isinstance(pai.sim, Folha): # Se o filho sim for uma folha, seguir pelo filho da direita
+            self.inserir(pai.nao, membroNovo)
+        elif isinstance(pai.sim, Nodo):
+            self.inserir(pai.sim, membroNovo)
+        elif pai.sim is None:
+            pai.sim = membroNovo
+        else:
+            raise Exception("Erro ao inserir filho em árvore")
 
     def carregar(self):
         # Carregar uma lista feita pelo inOrder a árvore em si
