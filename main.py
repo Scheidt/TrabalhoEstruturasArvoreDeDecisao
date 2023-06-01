@@ -73,12 +73,19 @@ class Play(Folha, Nodo):
             entrada = input(mensagem)
         return entrada
            
+    def inserir(self, pai, membroNovo):
+        # Ver se o sim é uma folha e se não for, colocar no não
+        pass
+
     def carregar(self):
         # Carregar uma lista feita pelo inOrder a árvore em si
+        # Pegar a lista do disco e colocar no self.__listaInOrder
+        self.__raiz = self.__listaInOrder.pop(0)
         pass
 
     def salvar(self):
         self.inOrder
+        # Colocar as funções de permanência para salvar self.__listaInOrder
         pass
 
     def inOrder(self, membArvore: Nodo or Folha): # Adaptei essa função do código da árvore AVL do trabalhinho. Eu NÃO pensei nisso.
