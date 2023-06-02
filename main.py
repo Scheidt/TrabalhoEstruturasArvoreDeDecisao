@@ -1,4 +1,5 @@
 from classes import *
+import pickle
 
 global raiz 
 raiz = None
@@ -10,94 +11,159 @@ class Play(Folha, Nodo):
         self.__pontuacao = 0
         self.__listaInOrder = []
 
-    def mostra_pontuacao(self):
-        print (f"\n*5")
+    def menu(self): # FEITO
+        switch = {'1': self.mostra_pontuacao,
+                  '2': self.jogar,
+                  '3': self.salvar,
+                  '4': self.carregar,
+                  '5': self.printarArvore} # DEVTOOL
+        while True:
+            print("\n"*3)
+            print("Eu sou o Akinor, uma versão livre de copyright de algum outro programa. Sei todas as cartas de Clash Royale. Quer testar meus conhecimentos?\n")
+            print("1: Mostrar pontuação")
+            print("2: Jogar")
+            print("3: Salvar dados para o disco")
+            print("4: Carregar dados do disco")
+            opcao = input("Insira a opção desejada: ")
+            opcao = self.sanitizarEntrada(opcao, ('1', '2', '3', '4', '5'), "Você deve selecionar um número entre 1 e 4")
+            switch[opcao]()
+
+    def mostra_pontuacao(self): # FEITO
+        print ("\n"*5)
         if self.__pontuacao == 0:
             print("Ainda não acertei nenhuma vez. Jogue mais uma vez e eu certamente vou acertar!")
+        elif self.__pontuacao == 1:
+            print("Acertei somente uma vez. Jogue mais algumas partidas pra eu aumentar esse número")
         else:
             print(f"Eu já acertei {self.__pontuacao} vezes. Se você jogar mais uma vez posso aumentar esse número!")
 
     def jogar(self):
-        # Percorrer lista e se não der certo, adicionar
-        pass
+        if isinstance(self.__raiz, Nodo):
+            atual = self.__raiz
+            while isinstance(atual, Nodo):
+                print(atual.pergunta)
+                resposta = input(f"['s'/'n']? ")
+                resposta = self.sanitizarEntrada(resposta, ('s', 'n'), "Sua resposta pode ser somente 's' ou 'n', por favor, tente novamente: ")
+                pai = resposta
+                if resposta == 's':
+                    atual = atual.sim
+                else:
+                    atual = atual.nao
+            print (f"Sua carta é {atual.valor}? ['s'/'n']")
+            acertou = input(f"['s'/'n']? ")
+            acertou = self.sanitizarEntrada(acertou, ('s', 'n'), "Sua resposta pode ser somente 's' ou 'n', por favor, tente novamente: ")
+            if acertou == 's':
+                print("\n"*5)
+                print ("Eba! Acertei mais uma vez")
+                self.__pontuacao += 1
+                return
+            else:
+                self.adicionar(pai, resposta)
+        if self.__raiz is None: # Se não houver carta inscrita
+            self.adicionar(None, None)
+            return
+        elif isinstance(self.__raiz, Folha): # Se houver somente uma carta inscrita
+            resposta = input(f"Sua carta é {self.__raiz.valor} ['s'/'n']? ")
+            resposta = self.sanitizarEntrada(resposta, ('s', 'n'), "Sua resposta pode ser somente 's' ou 'n', por favor, tente novamente: ")
+            if resposta == 's':
+                print("\n"*5)
+                print ("Eba! Acertei mais uma vez")
+                self.__pontuacao += 1
+                return
+            else:
+                self.adicionar(None, None)
+            return
+                        
 
     def adicionar(self, pai: Nodo, caminhoPai: str):
 
-        if self.__raiz is None:
-            valCarta = input("Qual é a primeira carta a ser adicionada? ")
-            self.__raiz = Folha(valCarta)
-        elif isinstance(self.__raiz, Folha):
-            resposta = input(f"Sua carta é {self.__raiz} ['s'/'n']? ")
-            resposta = self.sanitizarEntrada(resposta, ('s', 'n'), "Sua resposta pode ser somente 's' ou 'n', por favor, tente novamente: ")
+        if self.__raiz is None: # Se não houver nenhuma carta inscrita
+            valFilhoNovo = input("Qual é a primeira carta a ser adicionada? ")
+            self.__raiz = Folha(valFilhoNovo)
+            return
+        elif isinstance(self.__raiz, Folha): # Se houver somente uma carta inscrita
+            valFilhoNovo = input("Qual era a sua carta? ")
+            filhoOriginal = self.__raiz
+            pergunta = input(f"Insira uma pergunta de sim ou não que diferencie {filhoOriginal.valor} de {valFilhoNovo}: ")
+            posFilhoOriginal = input(f"E {filhoOriginal.valor} {pergunta} ['s'/'n'] ")
+            posFilhoOriginal = self.sanitizarEntrada(posFilhoOriginal, ('s', 'n'), "Sua resposta pode ser somente 's' ou 'n', por favor, tente novamente: ")
+            self.__raiz = Nodo(pergunta)
+            if posFilhoOriginal == 's':
+                self.__raiz.sim = filhoOriginal
+            else:
+                self.__raiz.nao = filhoOriginal
+            self.__raiz.adicionar_faltante(Folha(valFilhoNovo))
         else: 
-            # Pegar valor para o novo filho, criar um nodo com o filho anterior e o novo
-            # filho e colocar como filho do pai na posição caminhoPai
-            filhoNovo = input("Qual era a sua carta? ")
-            if caminhoPai == 's':
+            valFilhoNovo = input("Qual era a sua carta? ")
+            if caminhoPai == 's': # Pega o filho original e deleta ele do Nodo
                 filhoOriginal = pai.sim
-                caminhoPai = 'sim'
+                pai.sim = None
             else:
                 filhoOriginal = pai.nao
-                caminhoPai = 'nao'
-            pergunta = input(f"Insira uma pergunta de sim ou não que diferencie {filhoOriginal} de {filhoNovo}: ")
-            posFilhoOriginal = input(f"E {filhoNovo} {pergunta} ['s'/'n'] ")
+                pai.nao = None
+            pergunta = input(f"Insira uma pergunta de sim ou não que diferencie {filhoOriginal} de {valFilhoNovo}: ")
+            posFilhoOriginal = input(f"E {filhoOriginal.valor} {pergunta} ['s'/'n'] ")
             posFilhoOriginal = self.sanitizarEntrada(posFilhoOriginal, ('s', 'n'), "Sua resposta pode ser somente 's' ou 'n', por favor, tente novamente: ")
-            # Adicionar o filho em si
+            novoPai = Nodo(pergunta)
+            pai.adicionar_faltante(novoPai)
+            if posFilhoOriginal == 's':
+                novoPai.sim = filhoOriginal
+            else:
+                novoPai.nao = filhoOriginal
+            novoPai.adicionar_faltante(Folha(valFilhoNovo))
 
-    """def adicionarDev(self, caminho: list, posFilhoVelho: str, valFilhoNovo: str, pergunta: str):
-        if self.__raiz is None: # Se não houver nenhuma carta inscrita
-            self.__raiz = Folha(valFilhoNovo)
-        elif isinstance(self.__raiz, Folha): # Se houver somente uma carta inscrita
-            filhoVelho = self.__raiz
-            self.__raiz = Nodo(pergunta)
-            if posFilhoVelho == 'sim':
-                self.__raiz.sim = filhoVelho
-            elif posFilhoVelho == 'nao':
-                self.__raiz.nao = filhoVelho
-            self.__raiz.adicionar_faltante(Folha(valFilhoNovo))
-        # Olhar o código abaixo para verificar mudanças necessárias
-        else:
-            nodo = self.__raiz
-            for passo in caminho[0, -2]: # Percorre a árvore com o caminho dado até o pai do futuro nodo
-                nodo = nodo.passo
-            filhoVelho = nodo.caminho[-1] # Pega a folha que será adicionada no novo nodo
-            if posFilhoVelho == 'sim':
-                nodo.caminho[-1] = Nodo(pergunta, filhoVelho, Folha(valFilhoNovo))
-            elif posFilhoVelho == 'nao':
-                nodo.caminho[-1] = Nodo(pergunta, Folha(valFilhoNovo), filhoVelho)"""
 
     def sanitizarEntrada(self, entrada: str, possibilidades: tuple, mensagem: str):
         while not entrada in possibilidades:
             entrada = input(mensagem)
         return entrada
            
-    def inserir(self, pai, membroNovo):
-        # Ver se o sim é uma folha e se não for, colocar no não
-        # ACHO QUE NÃO CONSEGUE ADICIONAR FOLHAS NA DIREITA (pai.nao)
-        if isinstance(pai.sim, Folha): # Se o filho sim for uma folha, seguir pelo filho da direita
-            if pai.nao is None:
+    def inserir(self, pai, membroNovo): # Feito
+        # Para melhor compreensão, imagine o 'sim' para a esquerda e o 'nao' para a direita, os comentários indicam cada cas
+        # dos filhos. Por exemplo, "Folha - Nodo" indica que o filho esquerdo é uma Folha e o direito um Nodo
+        if isinstance(pai.sim, Folha): # Folha - ?
+            if pai.nao is None: # Folha - None
                 pai.nao = membroNovo
-            else:
-                self.inserir(pai.nao, membroNovo)
-        elif isinstance(pai.sim, Nodo):
-            self.inserir(pai.sim, membroNovo)
-        elif pai.sim is None:
+                return True
+            elif isinstance(pai.nao, Nodo): # Folha - Nodo
+                sucesso = self.inserir(pai.nao, membroNovo)
+                if sucesso: # Se conseguiu inserir ele sobe um True (Isso não é tão util, mas é importante se for False)
+                    return True
+            elif isinstance(pai.nao, Folha): # Folha - Folha
+                return False
+        elif isinstance(pai.sim, Nodo): # Nodo - ?
+            sucesso = self.inserir(pai.sim, membroNovo)
+            if sucesso:
+                return True
+            else: # Se, seguindo pela esquerda não encontrar um Nodo faltando um filho, a recursão entra nesse If.
+                if isinstance(pai.nao, Nodo): # Nodo 'cheio' - Nodo possivelmente com espaço
+                    sucesso = self.inserir(pai.nao, membroNovo) # Passa o valor pro nodo da direita e inicia recursão nele.
+                    return sucesso                              # Se encontrar um slot ele vai subir como True. Se não ele passa
+                                                                # pro pai um False
+                elif isinstance(pai.nao, Folha): # Nodo 'cheio' - Folha
+                    return False
+        elif pai.sim is None: # None - ?
             pai.sim = membroNovo
+            return True
         else:
             raise Exception("Erro ao inserir filho em árvore")
 
-    def carregar(self):
+    def carregar(self): # FEITO
         # Carregar uma lista feita pelo inOrder a árvore em si
         # Pegar a lista do disco e colocar no self.__listaInOrder
+        with open('list_data.pkl', 'rb') as file:
+            self.__listaInOrder = pickle.load(file)
         self.__raiz = self.__listaInOrder.pop(0)
         for membro in self.__listaInOrder:
             self.inserir(self.__raiz, membro)
 
-    def salvar(self):
-        self.inOrder
+    def salvar(self): # FEITO
+        self.inOrder()
+        with open('list_data.pkl', 'wb') as file:
+            pickle.dump(self.__listaInOrder, file)
         # Colocar as funções de permanência para salvar self.__listaInOrder
         pass
-
+        # FEITO
     def inOrder(self, membArvore: Nodo or Folha): # Adaptei essa função do código da árvore AVL do trabalhinho. Eu NÃO pensei nisso.
         self.__listaInOrder.append(membArvore)
         if isinstance(membArvore, Folha):
@@ -105,61 +171,14 @@ class Play(Folha, Nodo):
         else:
             self.inOrder(membArvore.sim)
             self.inOrder(membArvore.nao)
+
+    def printarArvore(self): # FEITO
+        for i in self.__listaInOrder:
+            if isinstance(i, Nodo):
+                print (i.pergunta)
+            else:
+                print(i.valor)
         
 
-
-
-
-# Código legado.
-def jogar():
-    atual = raiz
-    anterior = None
-    while isinstance(atual, Nodo):
-        print(atual.pergunta)
-        resposta = input("Responda Sim('s') ou Não('n'): ").lower()
-        while resposta not in ('s', 'n'):
-            resposta = input("A resposta pode ser somente 's' ou 'n', por favor, insira novamente: ").lower()
-        anterior = atual
-        if resposta == 's':
-            atual = atual.sim
-        else:
-            resposta = resposta.nao
-    print (f"Sua carta é {atual.valor}?") # TRABALHAR AQUI
-    if not anterior is None:
-        caminho = resposta
-    resposta = input("Responda Sim ('s') ou Não ('n'): ").lower()
-    while resposta not in ('s', 'n'):
-        resposta = input("A resposta pode ser somente 's' ou 'n', por favor, insira novamente: ").lower()
-    if resposta == 's':
-        print("Eba! Mais uma resposta certa!")
-        pontuacao += 1
-        print (f"Tenho {pontuacao} acerto(s)")
-    else:
-        if anterior is None:
-            adicionar(None, None, atual)
-        adicionar(anterior, caminho,  atual)
-
-def adicionar(pai: Nodo, caminho: str, filho1: Folha):
-    global raiz
-    novo = input("Qual era a sua carta? ")
-    pergunta = input(f"O que diferencia {filho1.valor} de {novo}: ")
-    posFilho1 = input(f"E {filho1.valor} {pergunta}?\n ['s'/'n'] ").lower()
-    while not posFilho1 in ('s', 'n'):
-        posFilho1 = input("A resposta pode ser somente 's' ou 'n'. Por favor, insira novamente: ").lower()
-    if posFilho1 == 's':
-        if pai is None:
-            raiz = Nodo(pergunta, filho1, Folha(novo))
-        else:
-            pai.caminho = Nodo(pergunta, filho1, Folha(novo))
-    else:
-        if pai is None:
-            raiz = Nodo(pergunta, Folha(novo), filho1)
-        else:
-            pai.caminho = Nodo(pergunta, Folha(novo), filho1)
-
-
-raiz = Folha(input("Insira um valor para a primeira carta: "))
-
-while True:
-    jogar()
-
+jogo = Play()
+jogo.menu()

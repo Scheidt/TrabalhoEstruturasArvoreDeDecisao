@@ -20,10 +20,10 @@ class Folha:
         self.__pai = pai"""
 
 class Nodo:
-    def __init__(self, pergunta: str) -> None:
+    def __init__(self, pergunta: str, sim = None, nao = None) -> None:
         self.__pergunta = pergunta
-        self.__nao = None
-        self.__sim = None
+        self.__nao = nao
+        self.__sim = sim
 
     @property
     def pergunta(self):
