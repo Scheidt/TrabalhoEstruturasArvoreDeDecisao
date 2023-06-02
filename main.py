@@ -49,7 +49,7 @@ class Play(Folha, Nodo):
             acertou = input(f"['s'/'n']? ")
             acertou = self.sanitizarEntrada(acertou, ('s', 'n'), "Sua resposta pode ser somente 's' ou 'n', por favor, tente novamente: ")
             if acertou == 's':
-                print("\n"*5)
+                print("\n"*2)
                 print ("Eba! Acertei mais uma vez")
                 self.__pontuacao += 1
                 return
@@ -62,7 +62,7 @@ class Play(Folha, Nodo):
             resposta = input(f"Sua carta é {self.__raiz.valor} ['s'/'n']? ")
             resposta = self.sanitizarEntrada(resposta, ('s', 'n'), "Sua resposta pode ser somente 's' ou 'n', por favor, tente novamente: ")
             if resposta == 's':
-                print("\n"*5)
+                print("\n"*2)
                 print ("Eba! Acertei mais uma vez")
                 self.__pontuacao += 1
                 return
@@ -71,7 +71,6 @@ class Play(Folha, Nodo):
             return
                         
     def adicionar(self, pai: Nodo, caminhoPai: str):
-
         if self.__raiz is None: # Se não houver nenhuma carta inscrita
             valFilhoNovo = input("Qual é a primeira carta a ser adicionada? ")
             self.__raiz = Folha(valFilhoNovo)
