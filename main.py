@@ -70,7 +70,6 @@ class Play(Folha, Nodo):
                 self.adicionar(None, None)
             return
                         
-
     def adicionar(self, pai: Nodo, caminhoPai: str):
 
         if self.__raiz is None: # Se não houver nenhuma carta inscrita
@@ -107,7 +106,6 @@ class Play(Folha, Nodo):
             else:
                 novoPai.nao = filhoOriginal
             novoPai.adicionar_faltante(Folha(valFilhoNovo))
-
 
     def sanitizarEntrada(self, entrada: str, possibilidades: tuple, mensagem: str):
         while not entrada in possibilidades:
@@ -146,12 +144,12 @@ class Play(Folha, Nodo):
 
     def carregar(self):
         # Carregar uma lista feita pelo inOrder a árvore em si
-        # Pegar a lista do disco e colocar no self.__listaInOrder
         with open('list_data.pkl', 'rb') as file:
             self.__listaInOrder = pickle.load(file)
         self.__raiz = self.__listaInOrder.pop(0)
         for membro in self.__listaInOrder:
             self.inserir(self.__raiz, membro)
+        self.__listaInOrder = []
 
     def salvar(self):
         self.inOrder(self.__raiz)
