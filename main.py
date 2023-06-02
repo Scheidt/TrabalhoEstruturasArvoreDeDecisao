@@ -9,8 +9,6 @@ class Play(Folha, Nodo):
         self.__raiz = None
         self.__pontuacao = 0
         self.__listaInOrder = []
-        if False: # Colocar True se desejar pre-definir alguns membros
-            self.preDef
 
     def mostra_pontuacao(self):
         print (f"\n*5")
@@ -77,7 +75,10 @@ class Play(Folha, Nodo):
         # Ver se o sim é uma folha e se não for, colocar no não
         # ACHO QUE NÃO CONSEGUE ADICIONAR FOLHAS NA DIREITA (pai.nao)
         if isinstance(pai.sim, Folha): # Se o filho sim for uma folha, seguir pelo filho da direita
-            self.inserir(pai.nao, membroNovo)
+            if pai.nao is None:
+                pai.nao = membroNovo
+            else:
+                self.inserir(pai.nao, membroNovo)
         elif isinstance(pai.sim, Nodo):
             self.inserir(pai.sim, membroNovo)
         elif pai.sim is None:
@@ -89,7 +90,8 @@ class Play(Folha, Nodo):
         # Carregar uma lista feita pelo inOrder a árvore em si
         # Pegar a lista do disco e colocar no self.__listaInOrder
         self.__raiz = self.__listaInOrder.pop(0)
-        pass
+        for membro in self.__listaInOrder:
+            self.inserir(self.__raiz, membro)
 
     def salvar(self):
         self.inOrder
