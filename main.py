@@ -38,13 +38,13 @@ class Play(Folha, Nodo):
             print(f"Eu já acertei {self.__pontuacao} vezes. Se você jogar mais uma vez posso aumentar esse número!")
 
     def jogar(self):
-        if isinstance(self.__raiz, Nodo):
+        if isinstance(self.__raiz, Nodo): # Se houver ao menos uma pergunta
             atual = self.__raiz
             while isinstance(atual, Nodo):
-                print(atual.pergunta)
+                print(f"Sua carta {atual.pergunta}")
                 resposta = input(f"['s'/'n']? ")
                 resposta = self.sanitizarEntrada(resposta, ('s', 'n'), "Sua resposta pode ser somente 's' ou 'n', por favor, tente novamente: ")
-                pai = resposta
+                pai = atual
                 if resposta == 's':
                     atual = atual.sim
                 else:
@@ -93,7 +93,7 @@ class Play(Folha, Nodo):
             else:
                 self.__raiz.nao = filhoOriginal
             self.__raiz.adicionar_faltante(Folha(valFilhoNovo))
-        else: 
+        else: # Se houver mais de uma carta inscrita
             valFilhoNovo = input("Qual era a sua carta? ")
             if caminhoPai == 's': # Pega o filho original e deleta ele do Nodo
                 filhoOriginal = pai.sim
@@ -101,7 +101,7 @@ class Play(Folha, Nodo):
             else:
                 filhoOriginal = pai.nao
                 pai.nao = None
-            pergunta = input(f"Insira uma pergunta de sim ou não que diferencie {filhoOriginal} de {valFilhoNovo}: ")
+            pergunta = input(f"Insira uma pergunta de sim ou não que diferencie {filhoOriginal.valor} de {valFilhoNovo}: ")
             posFilhoOriginal = input(f"E {filhoOriginal.valor} {pergunta} ['s'/'n'] ")
             posFilhoOriginal = self.sanitizarEntrada(posFilhoOriginal, ('s', 'n'), "Sua resposta pode ser somente 's' ou 'n', por favor, tente novamente: ")
             novoPai = Nodo(pergunta)
@@ -158,12 +158,12 @@ class Play(Folha, Nodo):
             self.inserir(self.__raiz, membro)
 
     def salvar(self): # FEITO
-        self.inOrder()
+        self.inOrder(self.__raiz)
         with open('list_data.pkl', 'wb') as file:
             pickle.dump(self.__listaInOrder, file)
         # Colocar as funções de permanência para salvar self.__listaInOrder
         pass
-        # FEITO
+
     def inOrder(self, membArvore: Nodo or Folha): # Adaptei essa função do código da árvore AVL do trabalhinho. Eu NÃO pensei nisso.
         self.__listaInOrder.append(membArvore)
         if isinstance(membArvore, Folha):
@@ -173,6 +173,7 @@ class Play(Folha, Nodo):
             self.inOrder(membArvore.nao)
 
     def printarArvore(self): # FEITO
+        self.inOrder(self.__raiz)
         for i in self.__listaInOrder:
             if isinstance(i, Nodo):
                 print (i.pergunta)
