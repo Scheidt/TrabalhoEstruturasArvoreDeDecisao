@@ -1,17 +1,13 @@
 from classes import *
 import pickle
 
-global raiz 
-raiz = None
-pontuacao = 0
-
 class Play(Folha, Nodo):
     def __init__(self) -> None:
         self.__raiz = None
         self.__pontuacao = 0
         self.__listaInOrder = []
 
-    def menu(self): # FEITO
+    def menu(self):
         switch = {'1': self.mostra_pontuacao,
                   '2': self.jogar,
                   '3': self.salvar,
@@ -28,7 +24,7 @@ class Play(Folha, Nodo):
             opcao = self.sanitizarEntrada(opcao, ('1', '2', '3', '4', '5'), "Você deve selecionar um número entre 1 e 4")
             switch[opcao]()
 
-    def mostra_pontuacao(self): # FEITO
+    def mostra_pontuacao(self):
         print ("\n"*5)
         if self.__pontuacao == 0:
             print("Ainda não acertei nenhuma vez. Jogue mais uma vez e eu certamente vou acertar!")
@@ -118,7 +114,7 @@ class Play(Folha, Nodo):
             entrada = input(mensagem)
         return entrada
            
-    def inserir(self, pai, membroNovo): # Feito
+    def inserir(self, pai, membroNovo):
         # Para melhor compreensão, imagine o 'sim' para a esquerda e o 'nao' para a direita, os comentários indicam cada cas
         # dos filhos. Por exemplo, "Folha - Nodo" indica que o filho esquerdo é uma Folha e o direito um Nodo
         if isinstance(pai.sim, Folha): # Folha - ?
@@ -148,7 +144,7 @@ class Play(Folha, Nodo):
         else:
             raise Exception("Erro ao inserir filho em árvore")
 
-    def carregar(self): # FEITO
+    def carregar(self):
         # Carregar uma lista feita pelo inOrder a árvore em si
         # Pegar a lista do disco e colocar no self.__listaInOrder
         with open('list_data.pkl', 'rb') as file:
@@ -157,7 +153,7 @@ class Play(Folha, Nodo):
         for membro in self.__listaInOrder:
             self.inserir(self.__raiz, membro)
 
-    def salvar(self): # FEITO
+    def salvar(self):
         self.inOrder(self.__raiz)
         with open('list_data.pkl', 'wb') as file:
             pickle.dump(self.__listaInOrder, file)
@@ -172,13 +168,13 @@ class Play(Folha, Nodo):
             self.inOrder(membArvore.sim)
             self.inOrder(membArvore.nao)
 
-    def printarArvore(self): # FEITO
+    def printarArvore(self):
         self.inOrder(self.__raiz)
         for i in self.__listaInOrder:
             if isinstance(i, Nodo):
-                print (i.pergunta)
+                print (f"Nodo: {i.pergunta}")
             else:
-                print(i.valor)
+                print(f"Folha: {i.valor}")
         
 
 jogo = Play()
