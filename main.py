@@ -71,23 +71,7 @@ class Play(Folha, Nodo):
             return
                         
     def adicionar(self, pai: Nodo, caminhoPai: str):
-        if self.__raiz is None: # Se não houver nenhuma carta inscrita
-            valFilhoNovo = input("Qual é a primeira carta a ser adicionada? ")
-            self.__raiz = Folha(valFilhoNovo)
-            return
-        elif isinstance(self.__raiz, Folha): # Se houver somente uma carta inscrita
-            valFilhoNovo = input("Qual era a sua carta? ")
-            filhoOriginal = self.__raiz
-            pergunta = input(f"Insira uma pergunta de sim ou não que diferencie {filhoOriginal.valor} de {valFilhoNovo}: ")
-            posFilhoOriginal = input(f"E {filhoOriginal.valor} {pergunta} ['s'/'n'] ")
-            posFilhoOriginal = self.sanitizarEntrada(posFilhoOriginal, ('s', 'n'), "Sua resposta pode ser somente 's' ou 'n', por favor, tente novamente: ")
-            self.__raiz = Nodo(pergunta)
-            if posFilhoOriginal == 's':
-                self.__raiz.sim = filhoOriginal
-            else:
-                self.__raiz.nao = filhoOriginal
-            self.__raiz.adicionar_faltante(Folha(valFilhoNovo))
-        else: # Se houver mais de uma carta inscrita
+        if isinstance(self.__raiz, Nodo): # Se houver mais de uma carta inscrita
             valFilhoNovo = input("Qual era a sua carta? ")
             if caminhoPai == 's': # Pega o filho original e deleta ele do Nodo
                 filhoOriginal = pai.sim
@@ -105,6 +89,22 @@ class Play(Folha, Nodo):
             else:
                 novoPai.nao = filhoOriginal
             novoPai.adicionar_faltante(Folha(valFilhoNovo))
+        elif isinstance(self.__raiz, Folha): # Se houver somente uma carta inscrita
+            valFilhoNovo = input("Qual era a sua carta? ")
+            filhoOriginal = self.__raiz
+            pergunta = input(f"Insira uma pergunta de sim ou não que diferencie {filhoOriginal.valor} de {valFilhoNovo}: ")
+            posFilhoOriginal = input(f"E {filhoOriginal.valor} {pergunta} ['s'/'n'] ")
+            posFilhoOriginal = self.sanitizarEntrada(posFilhoOriginal, ('s', 'n'), "Sua resposta pode ser somente 's' ou 'n', por favor, tente novamente: ")
+            self.__raiz = Nodo(pergunta)
+            if posFilhoOriginal == 's':
+                self.__raiz.sim = filhoOriginal
+            else:
+                self.__raiz.nao = filhoOriginal
+            self.__raiz.adicionar_faltante(Folha(valFilhoNovo))
+        elif self.__raiz is None: # Se não houver nenhuma carta inscrita
+            valFilhoNovo = input("Qual é a primeira carta a ser adicionada? ")
+            self.__raiz = Folha(valFilhoNovo)
+            return
 
     def sanitizarEntrada(self, entrada: str, possibilidades: tuple, mensagem: str):
         while not entrada in possibilidades:
@@ -114,17 +114,7 @@ class Play(Folha, Nodo):
     def inserir(self, pai, membroNovo):
         # Para melhor compreensão, imagine o 'sim' para a esquerda e o 'nao' para a direita, os comentários indicam cada cas
         # dos filhos. Por exemplo, "Folha - Nodo" indica que o filho esquerdo é uma Folha e o direito um Nodo
-        if isinstance(pai.sim, Folha): # Folha - ?
-            if pai.nao is None: # Folha - None
-                pai.nao = membroNovo
-                return True
-            elif isinstance(pai.nao, Nodo): # Folha - Nodo
-                sucesso = self.inserir(pai.nao, membroNovo)
-                if sucesso: # Se conseguiu inserir ele sobe um True (Isso não é tão util, mas é importante se for False)
-                    return True
-            elif isinstance(pai.nao, Folha): # Folha - Folha
-                return False
-        elif isinstance(pai.sim, Nodo): # Nodo - ?
+        if isinstance(pai.sim, Nodo): # Nodo - ?
             sucesso = self.inserir(pai.sim, membroNovo)
             if sucesso:
                 return True
@@ -138,11 +128,21 @@ class Play(Folha, Nodo):
         elif pai.sim is None: # None - ?
             pai.sim = membroNovo
             return True
+        elif isinstance(pai.sim, Folha): # Folha - ?
+            if pai.nao is None: # Folha - None
+                pai.nao = membroNovo
+                return True
+            elif isinstance(pai.nao, Nodo): # Folha - Nodo
+                sucesso = self.inserir(pai.nao, membroNovo)
+                if sucesso: # Se conseguiu inserir ele sobe um True (Isso não é tão util, mas é importante se for False)
+                    return True
+            elif isinstance(pai.nao, Folha): # Folha - Folha
+                return False
         else:
             raise Exception("Erro ao inserir filho em árvore")
 
     def carregar(self):
-        # Carregar uma lista feita pelo inOrder a árvore em si
+        # Carregar uma lista feita pelo inOrder para a árvore em si
         with open('list_data.pkl', 'rb') as file:
             self.__listaInOrder = pickle.load(file)
         self.__raiz = self.__listaInOrder.pop(0)
@@ -154,7 +154,6 @@ class Play(Folha, Nodo):
         self.inOrder(self.__raiz)
         with open('list_data.pkl', 'wb') as file:
             pickle.dump(self.__listaInOrder, file)
-        # Colocar as funções de permanência para salvar self.__listaInOrder
         pass
 
     def inOrder(self, membArvore: Nodo or Folha): # Adaptei essa função do código da árvore AVL do trabalhinho. Eu NÃO pensei nisso.
