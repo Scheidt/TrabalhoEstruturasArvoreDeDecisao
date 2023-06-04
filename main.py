@@ -55,7 +55,7 @@ class Play(Folha, Nodo):
                 return
             else:
                 self.adicionar(pai, resposta)
-        if self.__raiz is None: # Se não houver carta inscrita
+        elif self.__raiz is None: # Se não houver carta inscrita
             self.adicionar(None, None)
             return
         elif isinstance(self.__raiz, Folha): # Se houver somente uma carta inscrita

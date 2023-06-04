@@ -1,7 +1,6 @@
 class Folha:
     def __init__(self, valor: str) -> None:
         self.__valor = valor
-#        self.__pai = pai
 
     @property
     def valor(self):
@@ -10,14 +9,6 @@ class Folha:
     @valor.setter
     def valor(self, valor: str):
         self.__valor = valor
-
-"""    @property
-    def pai(self):
-        return self.__pai
-    
-    @pai.setter
-    def pai(self, pai):
-        self.__pai = pai"""
 
 class Nodo:
     def __init__(self, pergunta: str, sim = None, nao = None) -> None:
